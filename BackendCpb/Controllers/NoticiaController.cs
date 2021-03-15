@@ -46,18 +46,40 @@ namespace BackendCpb.Controllers
             return product;
         }
 
-        //[HttpPut]
-        //[Route("{id:int}")]
-        //public async Task<ActionResult<Noticia>> GetById(
-        //    [FromServices] DataContext context, int id,
-        //    [FromBody] Noticia model
-        //    )
-        //{
-        //    var product = await context.Noticia.Where(x => x.noticiaid == id).Update(model);
-        //    product = model;    
-        //    context.SaveChangesAsync();
-        //    return Ok(new { message = "Usuário ou senha inválidos" });
-         
-        //}
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<ActionResult<Noticia>> UpdateNoticia(
+            [FromServices] DataContext context, int id,
+            [FromBody] Noticia model
+            )
+        {
+            if (model.noticiaid != id)
+            {
+                return BadRequest();
+            }
+
+            context.Entry(model).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+
+            return Ok();
+
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<ActionResult<Noticia>> DeleateNoticia(
+            [FromServices] DataContext context, int id)
+        {
+            var item = await context.Noticia.FindAsync(id);
+            if(item == null)
+            {
+                return NotFound();
+            }
+
+            context.Noticia.Remove(item);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
